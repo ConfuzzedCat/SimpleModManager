@@ -3,7 +3,7 @@ using Serilog;
 
 namespace SimpleModManager;
 
-public static class UriHandler
+public class UriHandler
 {
     private static ILogger _logger; 
     
@@ -15,8 +15,7 @@ public static class UriHandler
     
     static UriHandler()
     {
-        // TODO: added logging.
-        _logger = null;
+        _logger = LoggerHandler.GetLogger<UriHandler>();
     }
 
     public static void AddUriSchemeHandler()
