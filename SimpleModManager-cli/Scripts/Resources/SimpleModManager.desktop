@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=SimpleModManager
-Comment=Simple Mod Manager for Nexusmods.com
-Exec=SimpleModManager %u
-Icon=SimpleModManager
-Type=Application
-Terminal=false
-MimeType=x-scheme-handler/nxm;

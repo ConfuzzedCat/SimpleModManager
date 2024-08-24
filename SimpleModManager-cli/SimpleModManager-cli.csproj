@@ -12,4 +12,13 @@
       <ProjectReference Include="..\SimpleModManager\SimpleModManager.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Scripts\URI-Handling-Windows.bat">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Scripts\URI-Handling-Linux.sh">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

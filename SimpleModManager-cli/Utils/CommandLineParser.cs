@@ -17,6 +17,10 @@ public static class CommandLineParser
         }
             
         string str = args[0];
+        if (str.StartsWith("nxm://"))
+        {
+            //TODO: Handle nxm mod download
+        }
 
         if (str.StartsWith('-'))
         {

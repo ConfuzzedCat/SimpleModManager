@@ -1,9 +1,11 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Serilog;
+using Microsoft.Win32;
 
 namespace SimpleModManager;
 
-public class UriHandler
+public sealed class UriHandler
 {
     private static ILogger _logger; 
     
@@ -18,30 +20,53 @@ public class UriHandler
         _logger = LoggerHandler.GetLogger<UriHandler>();
     }
 
+    //TODO: Add remove uri handlers option
+    
     public static void AddUriSchemeHandler()
     {
+        var uriFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".uri_handled");
+        if (File.Exists(uriFile))
+        {
+            return;
+        }
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            HandleLinuxUri();
-            return;
+            AddUriHandlerLinux();
         }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            HandleWindowsUri();
-            return;
+            AddUriHandlerWindows();
         }
-        
-        return;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            throw new NotSupportedException("MacOS/OSX not supported yet.");
+        }
+        File.WriteAllText(uriFile, string.Empty);
+        File.SetAttributes(uriFile, FileAttributes.Hidden);
     }
 
-    private static void HandleWindowsUri()
+    private static void AddUriHandlerWindows()
     {
-        throw new NotImplementedException();
+        var scriptPsi = new ProcessStartInfo
+        {
+            Arguments = System.Reflection.Assembly.GetExecutingAssembly().Location,
+            FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", "URI-Handling-Windows.bat"),
+            UseShellExecute = true,
+            Verb = "runas"
+        };
+        Process.Start(scriptPsi);
     }
 
-    private static void HandleLinuxUri()
+    private static void AddUriHandlerLinux()
     {
-        throw new NotImplementedException();
+        var scriptPsi = new ProcessStartInfo
+        {
+            Arguments = System.Reflection.Assembly.GetExecutingAssembly().Location,
+            FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", "URI-Handling-Linux.sh"),
+            UseShellExecute = true
+        };
+        Process.Start(scriptPsi);
     }
 }
