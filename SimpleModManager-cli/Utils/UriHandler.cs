@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Serilog;
-using Microsoft.Win32;
+using SimpleModManager.Util;
 
-namespace SimpleModManager;
+namespace SimpleModManager_cli.Utils;
 
 public sealed class UriHandler
 {

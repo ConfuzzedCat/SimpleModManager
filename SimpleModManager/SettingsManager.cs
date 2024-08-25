@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Serilog;
 using SimpleModManager.Model;
+using SimpleModManager.Util;
 
 namespace SimpleModManager;
 

@@ -1,15 +1,18 @@
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 
-namespace SimpleModManager;
+namespace SimpleModManager.Util;
 
-public class LoggerHandler
+public static class LoggerHandler
 {
-    private static ILogger? _logger;
+    private static Logger? _logger;
 
-    private static ILogger CreateLogger()
+    private static Logger CreateLogger()
     {
         _logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
+            .MinimumLevel.Is(LogEventLevel.Debug)
             .WriteTo.File("log.txt", 
                 rollingInterval: RollingInterval.Day, 
                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}][{SourceContext}] - {Message}{NewLine}{Exception}")
@@ -17,5 +20,8 @@ public class LoggerHandler
         return _logger;
     }
 
-    public static ILogger GetLogger<T>() => _logger == null ? CreateLogger().ForContext<T>() : _logger.ForContext<T>();
+    public static ILogger GetLogger<T>()
+    {
+        return _logger == null ? CreateLogger().ForContext<T>() : _logger.ForContext<T>();
+    }
 }

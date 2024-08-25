@@ -7,9 +7,9 @@ public sealed class GameModSettings
     
     // steam://rungameid/steamid
     public string SteamId { get; private set; }
-    public ModStructure[] ModStructures { get; private set; }
+    public ModFileSettingStructure[] ModStructures { get; private set; }
 
-    public GameModSettings(string id, string name, string steamId, ModStructure[] modStructures)
+    public GameModSettings(string id, string name, string steamId, ModFileSettingStructure[] modStructures)
     {
         Id = id;
         Name = name;

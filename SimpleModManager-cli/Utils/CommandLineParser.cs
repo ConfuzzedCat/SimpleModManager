@@ -16,40 +16,37 @@ public static class CommandLineParser
             throw new ArgumentException("Too many arguments provided");
         }
             
-        string str = args[0];
+        var str = args[0];
         if (str.StartsWith("nxm://"))
         {
             //TODO: Handle nxm mod download
         }
 
-        if (str.StartsWith('-'))
+        if (!str.StartsWith('-')) throw new ArgumentException($"Unexpected argument format: {str}");
+        switch (str)
         {
-            if (str == "-h" || str == "--help")
-            {
+            case "-h":
+            case "--help":
                 parsedArgs.Add(str, "");
-                return parsedArgs; 
-            }
-
+                return parsedArgs;
             // Handle "-g" or "--game" option
-            if (str == "-g" || str == "--game")
+            case "-g":
+            case "--game":
             {
-                if (args.Length == 2)
+                if (args.Length != 2) throw new ArgumentException("Expected a value after '-g' or '--game'");
+                var value = args[1];
+
+                // Ensure there is only one argument for "-g" or "--game"
+                if (value.StartsWith('-'))
                 {
-                    string value = args[1];
-
-                    // Ensure there is only one argument for "-g" or "--game"
-                    if (value.StartsWith('-'))
-                    {
-                        throw new ArgumentException("Expected a value after '-g' or '--game'");
-                    }
-
-                    parsedArgs.Add(str, value);
-                    return parsedArgs;
+                    throw new ArgumentException("Expected a value after '-g' or '--game'");
                 }
-                throw new ArgumentException("Expected a value after '-g' or '--game'");
+
+                parsedArgs.Add(str, value);
+                return parsedArgs;
             }
-            throw new ArgumentException($"Unknown argument: {str}");
+            default:
+                throw new ArgumentException($"Unknown argument: {str}");
         }
-        throw new ArgumentException($"Unexpected argument format: {str}");
     }
 }
