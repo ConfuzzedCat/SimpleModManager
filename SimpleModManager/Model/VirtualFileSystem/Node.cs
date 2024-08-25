@@ -2,6 +2,12 @@ namespace SimpleModManager.Model.VirtualFileSystem;
 
 public abstract class Node
 {
+    public Node(string name, DirectoryNode? parent = null)
+    {
+        Name = name;
+        Parent = parent;
+    }
+
     public string Name { get; set; }
 
     public DirectoryNode? Parent { get; set; }
@@ -12,10 +18,4 @@ public abstract class Node
     }
 
     public abstract string Display(int depth);
-
-    public Node(string name, DirectoryNode? parent = null)
-    {
-        Name = name;
-        Parent = parent;
-    }
 }

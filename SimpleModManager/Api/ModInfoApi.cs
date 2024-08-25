@@ -28,14 +28,14 @@ public class ModInfoApi
     public bool available { get; set; }
     public User user { get; set; }
     public Endorsement endorsement { get; set; }
-    
+
     public class User
     {
         public int member_id { get; set; }
         public int member_group_id { get; set; }
         public string name { get; set; }
     }
-    
+
     public class Endorsement
     {
         public string endorse_status { get; set; }

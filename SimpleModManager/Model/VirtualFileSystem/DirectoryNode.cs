@@ -4,29 +4,25 @@ namespace SimpleModManager.Model.VirtualFileSystem;
 
 public class DirectoryNode : Node
 {
-    public static DirectoryNode CreateFromPath(string path)
-    {
-        var directoryInfo = new DirectoryInfo(path);
-        var root = new DirectoryNode(directoryInfo.Name);
-        foreach (var file in directoryInfo.GetFiles())
-        {
-            root.AddChild(new FileNode(file.Name));
-        }
-        foreach (var directory in directoryInfo.GetDirectories())
-        {
-            root.AddChild(CreateFromPath(directory.FullName));
-        }
-        return root;
-    }
-    public List<Node> Children { get; }
-    
     public DirectoryNode(string name, DirectoryNode? parent = null) : base(name, parent)
     {
         Children = new List<Node>();
     }
+
     public DirectoryNode(string name, DirectoryNode? parent, params Node[] children) : base(name, parent)
     {
         Children = new List<Node>(children);
+    }
+
+    public List<Node> Children { get; }
+
+    public static DirectoryNode CreateFromPath(string path)
+    {
+        var directoryInfo = new DirectoryInfo(path);
+        var root = new DirectoryNode(directoryInfo.Name);
+        foreach (var file in directoryInfo.GetFiles()) root.AddChild(new FileNode(file.Name));
+        foreach (var directory in directoryInfo.GetDirectories()) root.AddChild(CreateFromPath(directory.FullName));
+        return root;
     }
 
     public void AddChild(Node child)
@@ -35,6 +31,7 @@ public class DirectoryNode : Node
         Children.Add(child);
         SortChildren();
     }
+
     private void SortChildren()
     {
         Children.Sort((x, y) =>
@@ -52,10 +49,7 @@ public class DirectoryNode : Node
     {
         var sb = new StringBuilder();
         sb.Append(new string(' ', depth * 2) + Name + Path.DirectorySeparatorChar);
-        foreach (var child in Children)
-        {
-            sb.Append("\n"+child.Display(depth + 1));
-        }
+        foreach (var child in Children) sb.Append("\n" + child.Display(depth + 1));
         return sb.ToString();
     }
 }

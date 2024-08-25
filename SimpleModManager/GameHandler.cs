@@ -10,7 +10,7 @@ public class GameHandler
         ModSettings = modSettings ?? throw new ArgumentNullException(nameof(modSettings));
     }
 
-    public GameModSettings ModSettings { get; private set; }
+    public GameModSettings ModSettings { get; }
 
     //TODO: Implement this class
 
@@ -27,6 +27,5 @@ public class GameHandler
 
     public void ShowArchiveMods()
     {
-        
     }
 }

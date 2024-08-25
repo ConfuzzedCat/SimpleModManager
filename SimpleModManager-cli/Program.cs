@@ -1,6 +1,5 @@
 ﻿using SimpleModManager;
 using SimpleModManager_cli.Utils;
-using SimpleModManager.Api;
 using SimpleModManager.Util;
 
 namespace SimpleModManager_cli;
@@ -35,8 +34,8 @@ internal class Program
                     return 0;
 
                 case 0:
-                    // Get game
-                    // Set it to gameName
+                // Get game
+                // Set it to gameName
 
                 case 2:
                     // setup paths
@@ -51,6 +50,7 @@ internal class Program
             Console.WriteLine("SMM Crashed!\n{0}", e);
             return 1;
         }
+
         return 0;
     }
 }

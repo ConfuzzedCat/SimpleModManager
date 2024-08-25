@@ -12,7 +12,6 @@ public abstract class AClientIo
     }
 
     public abstract string Read(string prompt);
-    
-    public abstract void Write(string input);
 
+    public abstract void Write(string input);
 }
