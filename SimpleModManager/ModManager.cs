@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Serilog;
 using SimpleModManager.Model;
+using SimpleModManager.Model.VirtualFileSystem;
 using SimpleModManager.Util;
 
 namespace SimpleModManager;
@@ -17,6 +18,9 @@ public class ModManager
     }
 
     public static GameHandler? CurrentGame { get; private set; }
+    public static DirectoryNode GameVFS { get; set; }
+    public static DirectoryNode GameStagingVFS { get; set; }
+    
     public static AClientIo ClientIo { get; set; }
 
     public static void ModGame(string gameId)
@@ -37,6 +41,8 @@ public class ModManager
         {
             Logger.Error(e, "Failed to load game mod settings. Probably invalid Json format.");
         }
+
+        GameVFS = VFSHandler.CreateFromPath(CurrentGame.GamePath);
     }
 
     public static string GetCurrentStagingFolder()

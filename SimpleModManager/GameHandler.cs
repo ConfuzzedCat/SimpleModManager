@@ -1,5 +1,12 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using GameFinder.RegistryUtils;
+using GameFinder.StoreHandlers.Steam;
+using GameFinder.StoreHandlers.Steam.Models.ValueTypes;
+using NexusMods.Paths;
+using Serilog;
 using SimpleModManager.Model;
+using SimpleModManager.Util;
 
 namespace SimpleModManager;
 
@@ -7,12 +14,33 @@ public class GameHandler
 {
     public GameHandler(GameModSettings? modSettings)
     {
+        _logger = LoggerHandler.GetLogger<GameHandler>();
         ModSettings = modSettings ?? throw new ArgumentNullException(nameof(modSettings));
+        GamePath = FindGame();
     }
 
+    private readonly ILogger _logger;
     public GameModSettings ModSettings { get; }
 
-    //TODO: Implement this class
+    public String GamePath { get; set; }
+
+    private string FindGame()
+    {
+        var handler = new SteamHandler(FileSystem.Shared, OperatingSystem.IsWindows() ? WindowsRegistry.Shared : null);
+        var appid = AppId.From(uint.Parse(ModSettings.SteamId));
+        var game = handler.FindOneGameById(appid, out var errors);
+        foreach (var error in errors)
+        {
+            _logger.Error("Error trying to find game. {0}", error);
+        }
+
+        if (game is null)
+        {
+            throw new Exception($"[Steam] Couldn't find game: {ModSettings.Id}");
+        }
+
+        return game.Path.GetFullPath();
+    }
 
     public void OpenGame()
     {

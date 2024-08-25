@@ -18,6 +18,7 @@ public partial class ModHandler
         var apiInfo = new ApiClient().RequestModInfo(gameId, modId).GetAwaiter().GetResult();
         var version = RequestVersion(apiInfo.version);
 
+        // unzip and register files
 
         return null;
     }

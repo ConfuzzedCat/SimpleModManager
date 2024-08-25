@@ -10,4 +10,13 @@ public class FileNode : Node
     {
         return new string(' ', depth * 2) + Name;
     }
+    public override bool IsDir()
+    {
+        return false;
+    }
+
+    public override bool IsFile()
+    {
+        return true;
+    }
 }

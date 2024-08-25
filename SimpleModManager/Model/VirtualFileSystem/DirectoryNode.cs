@@ -16,15 +16,6 @@ public class DirectoryNode : Node
 
     public List<Node> Children { get; }
 
-    public static DirectoryNode CreateFromPath(string path)
-    {
-        var directoryInfo = new DirectoryInfo(path);
-        var root = new DirectoryNode(directoryInfo.Name);
-        foreach (var file in directoryInfo.GetFiles()) root.AddChild(new FileNode(file.Name));
-        foreach (var directory in directoryInfo.GetDirectories()) root.AddChild(CreateFromPath(directory.FullName));
-        return root;
-    }
-
     public void AddChild(Node child)
     {
         child.Parent = this;
@@ -51,5 +42,15 @@ public class DirectoryNode : Node
         sb.Append(new string(' ', depth * 2) + Name + Path.DirectorySeparatorChar);
         foreach (var child in Children) sb.Append("\n" + child.Display(depth + 1));
         return sb.ToString();
+    }
+
+    public override bool IsDir()
+    {
+        return true;
+    }
+
+    public override bool IsFile()
+    {
+        return false;
     }
 }

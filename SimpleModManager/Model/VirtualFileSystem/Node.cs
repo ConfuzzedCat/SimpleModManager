@@ -12,10 +12,18 @@ public abstract class Node
 
     public DirectoryNode? Parent { get; set; }
 
-    public string Display()
-    {
-        return Display(0);
-    }
+    public abstract string Display(int depth = 0);
 
-    public abstract string Display(int depth);
+    public abstract bool IsDir();
+    public abstract bool IsFile();
+
+    public string GetPath()
+    {
+        if (Parent is null)
+        {
+            return IsDir() ? Name + Path.DirectorySeparatorChar : Name;
+        }
+
+        return Parent.GetPath() + Path.DirectorySeparatorChar + Name;
+    }
 }
