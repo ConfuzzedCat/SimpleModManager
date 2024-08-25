@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Serilog;
 using SharpCompress.Common;
@@ -33,11 +34,28 @@ public sealed class ExtractorHandler
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            
+            var bin = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7zipBin", "Linux", "7zzs");
+            var psi = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                Arguments = $"-c \"{bin} x {filePath} -o{extractDir}\""
+            };
+            var proc = new Process() { StartInfo = psi };
+            proc.Start();
+            return;
         }
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            
+            var process = new Process();
+            var startInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = "cmd.exe",
+                Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg"
+            };
+            process.StartInfo = startInfo;
+            process.Start();
+            return;
         }
         
         throw new NotImplementedException();
