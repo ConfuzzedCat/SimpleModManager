@@ -4,23 +4,23 @@ namespace SimpleModManager.Model;
 
 public class Mod
 {
-    public Mod(int id, string gameId, string name, bool installed, string filePath, string version,
-        DirectoryNode modFiles)
+    public Mod(int id, string gameId, string name, bool installed, string modPath, string version,
+        Node modFiles)
     {
         Id = id;
         GameId = gameId;
         Name = name;
         Installed = installed;
-        FilePath = filePath;
+        ModPath = modPath;
         Version = version;
         ModFiles = modFiles;
     }
 
-    public required int Id { get; set; }
-    public required string GameId { get; set; }
-    public required string Name { get; set; }
+    public int Id { get; set; }
+    public string GameId { get; set; }
+    public string Name { get; set; }
     public bool Installed { get; set; }
-    public string FilePath { get; set; }
+    public string ModPath { get; set; }
     public string Version { get; set; }
-    public DirectoryNode ModFiles { get; set; }
+    public Node ModFiles { get; set; }
 }

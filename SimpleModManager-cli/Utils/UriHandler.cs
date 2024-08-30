@@ -25,13 +25,25 @@ public sealed class UriHandler
     public static void AddUriSchemeHandler()
     {
         var uriFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".uri_handled");
-        if (File.Exists(uriFile)) return;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) AddUriHandlerLinux();
+        if (File.Exists(uriFile))
+        {
+            return;
+        }
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) AddUriHandlerWindows();
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            AddUriHandlerLinux();
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            AddUriHandlerWindows();
+        }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
             throw new NotSupportedException("MacOS/OSX not supported yet.");
+        }
         File.WriteAllText(uriFile, string.Empty);
         File.SetAttributes(uriFile, FileAttributes.Hidden);
     }

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using Serilog;
 using SimpleModManager.Model;
 using SimpleModManager.Model.VirtualFileSystem;
@@ -18,8 +18,8 @@ public class ModManager
     }
 
     public static GameHandler? CurrentGame { get; private set; }
-    public static DirectoryNode GameVFS { get; set; }
-    public static DirectoryNode GameStagingVFS { get; set; }
+    public static Node GameVFS { get; set; }
+    public static Node GameStagingVFS { get; set; }
     
     public static AClientIo ClientIo { get; set; }
 
@@ -35,7 +35,7 @@ public class ModManager
         var content = File.ReadAllText(gameModSettingsFile);
         try
         {
-            CurrentGame = new GameHandler(JsonConvert.DeserializeObject<GameModSettings>(content));
+            CurrentGame = new GameHandler(JsonSerializer.Deserialize<GameModSettings>(content));
         }
         catch (Exception e)
         {

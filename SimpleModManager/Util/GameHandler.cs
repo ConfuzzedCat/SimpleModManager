@@ -1,14 +1,12 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.Steam;
 using GameFinder.StoreHandlers.Steam.Models.ValueTypes;
 using NexusMods.Paths;
 using Serilog;
 using SimpleModManager.Model;
-using SimpleModManager.Util;
 
-namespace SimpleModManager;
+namespace SimpleModManager.Util;
 
 public class GameHandler
 {

@@ -34,7 +34,7 @@ public sealed class ExtractorHandler
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            var bin = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "7zipBin", "Linux", "7zzs");
+            var bin = Path.Combine(Directory.GetCurrentDirectory() /*AppDomain.CurrentDomain.BaseDirectory*/, "7zipBin", "Linux", "7zzs");
             var psi = new ProcessStartInfo
             {
                 FileName = "/bin/bash",
@@ -44,25 +44,25 @@ public sealed class ExtractorHandler
             proc.Start();
             return;
         }
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+        var process = new Process();
+        var startInfo = new ProcessStartInfo
         {
-            var process = new Process();
-            var startInfo = new ProcessStartInfo
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "cmd.exe",
-                Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg"
-            };
-            process.StartInfo = startInfo;
-            process.Start();
-            return;
-        }
-        
-        throw new NotImplementedException();
+            WindowStyle = ProcessWindowStyle.Hidden,
+            FileName = "cmd.exe",
+            Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg"
+        };
+        process.StartInfo = startInfo;
+        process.Start();
     }
 
     private static void ExtractOther(string filePath, string extractDir)
     {
+        if (!Directory.Exists(extractDir))
+        {
+            Directory.CreateDirectory(extractDir);
+        }
         using Stream stream = File.OpenRead(filePath);
         var reader = ReaderFactory.Open(stream);
         while (reader.MoveToNextEntry())

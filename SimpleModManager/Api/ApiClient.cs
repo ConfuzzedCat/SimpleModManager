@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using Serilog;
 using SimpleModManager.Util;
 
@@ -81,7 +81,7 @@ public sealed class ApiClient : IDisposable
 
             var body = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<ModInfoApi>(body) ??
+            return JsonSerializer.Deserialize<ModInfoApi>(body) ??
                    throw new Exception("Couldn't deserialize response from NexusMods");
         }
     }

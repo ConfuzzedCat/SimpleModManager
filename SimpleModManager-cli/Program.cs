@@ -1,4 +1,5 @@
-﻿using SimpleModManager;
+﻿using System.Text.Json;
+using SimpleModManager;
 using SimpleModManager_cli.Utils;
 using SimpleModManager.Util;
 
@@ -11,8 +12,30 @@ internal class Program
         //var _logger = LoggerHandler.GetLogger<Program>();
         //_logger.Information("Test");
         CliClientIo.Init();
-        var read = ModManager.ClientIo.Read("Test");
-        Console.WriteLine(read);
+
+        var testzip = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Black Lily-16363-1-0-1724410699.rar");
+        //ExtractorHandler.ExtractFromFile(testzip, testzip.Remove(testzip.Length-4));
+
+        ModManager.ModGame("cyberpunk2077");
+
+        var testMod = ModHandler.FromFile(testzip);
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+        var serialized = JsonSerializer.Serialize(testMod, jsonSerializerOptions);
+
+
+        Console.WriteLine("\n\n\n");
+
+        Console.WriteLine(serialized);
+        File.WriteAllText(
+            "/home/confuzzedcat/source/repos/SimpleModManager/SimpleModManager-cli/bin/Debug/net8.0/test.json",
+            serialized);
+
+        Console.WriteLine("\n\n\n");
+
+        Console.WriteLine(testMod.ModFiles.Display());
         Console.ReadKey();
 
         //var client = new ApiClient();

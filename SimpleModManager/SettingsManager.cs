@@ -1,4 +1,5 @@
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Serilog;
 using SimpleModManager.Model;
 using SimpleModManager.Util;
@@ -14,6 +15,11 @@ public sealed class SettingsManager
 
     public static readonly SmmConfig Settings;
 
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true
+    };
+
 
     static SettingsManager()
     {
@@ -27,7 +33,7 @@ public sealed class SettingsManager
         var content = File.ReadAllText(SettingsPath);
         try
         {
-            var smmConfig = JsonConvert.DeserializeObject<SmmConfig>(content);
+            var smmConfig = JsonSerializer.Deserialize<SmmConfig>(content);
             if (smmConfig is not null) return smmConfig;
             Logger.Warning(
                 "Deserializing settings file content, returned null. Default settings will be loaded and saved.");
@@ -52,7 +58,7 @@ public sealed class SettingsManager
     {
         try
         {
-            var settingsContent = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            var settingsContent = JsonSerializer.Serialize(settings, JsonSerializerOptions);
             File.WriteAllText(SettingsPath, settingsContent);
         }
         catch (Exception e)
