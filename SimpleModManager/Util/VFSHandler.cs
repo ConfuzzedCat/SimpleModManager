@@ -23,17 +23,40 @@ public class VFSHandler
     private static Node _CreateFromPath(string path)
     {
         var directoryInfo = new DirectoryInfo(path);
-        var root = new Node(directoryInfo.Name, path);
+        var root = new Node(directoryInfo.Name, path, "");
         foreach (var file in directoryInfo.GetFiles())
         {
-            root.AddChild(new Node(file.Name, file.FullName));
+            if (file.Name == ".smm")
+            {
+                continue;
+            }            
+            root.AddChild(new Node(file.Name, file.FullName, root.RelativePath));
         }
 
         foreach (var directory in directoryInfo.GetDirectories())
         {
-            root.AddChild(_CreateFromPath(directory.FullName));
+            root.AddChild(_CreateFromPathWithParent(directory.FullName, root));
+        }
+        return root;
+    }
+
+    private static Node _CreateFromPathWithParent(string path, Node parent)
+    {
+        var directoryInfo = new DirectoryInfo(path);
+        var root = new Node(directoryInfo.Name, path, parent.RelativePath);
+        foreach (var file in directoryInfo.GetFiles())
+        {
+            if (file.Name == ".smm")
+            {
+                continue;
+            }
+            root.AddChild(new Node(file.Name, file.FullName, root.RelativePath));
         }
 
+        foreach (var directory in directoryInfo.GetDirectories())
+        {
+            root.AddChild(_CreateFromPathWithParent(directory.FullName, root));
+        }
         return root;
     }
     
@@ -43,7 +66,7 @@ public class VFSHandler
         {
             throw new IOException("Node isn't a file");
         }
-        using var stream = new FileInfo(node.RealPath).OpenRead();
+        using var stream = new FileInfo(node.AbsolutePath).OpenRead();
         using var md5 = MD5.Create();
         var hash = md5.ComputeHash(stream);
         return BitConverter.ToString(hash).ToLower();

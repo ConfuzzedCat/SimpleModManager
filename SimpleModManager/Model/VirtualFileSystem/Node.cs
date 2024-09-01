@@ -1,11 +1,18 @@
 
+using System.Collections;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace SimpleModManager.Model.VirtualFileSystem;
 
 public sealed class Node
 {
-    public Node(string name, string realPath)
+    [JsonConstructor]
+    public Node()
+    {
+        
+    }
+    public Node(string name, string absolutePath, string relativePath)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -14,19 +21,27 @@ public sealed class Node
 
         Id = Guid.NewGuid();
         Name = name;
-        RealPath = realPath;
+        AbsolutePath = absolutePath;
         Children = new List<Node>();
+        if (relativePath == "")
+        {
+            RelativePath = ".";
+            return;
+        }
+        RelativePath = relativePath + Path.DirectorySeparatorChar + name;
     }
 
-    public Node(string name, string realPath, params Node[] children) : this (name, realPath)
+
+    public Node(string name, string absolutePath, string relativePath, params Node[] children) : this (name, absolutePath, relativePath)
     {
         Children = [..children];
     }
 
     public Guid Id { get; }
     public string Name { get; set; }
-    public string RealPath { get; set; }
-    public List<Node> Children { get; }
+    public string AbsolutePath { get; set; }
+    public string RelativePath { get; set; }
+    private List<Node> Children { get; set; }
 
     public void AddChild(Node child)
     {
@@ -52,11 +67,26 @@ public sealed class Node
 
     public bool IsDir()
     {
-        return Directory.Exists(RealPath);
+        return Directory.Exists(AbsolutePath);
     }
 
     public bool IsFile()
     {
-        return File.Exists(RealPath);
+        return File.Exists(AbsolutePath);
+    }
+    public List<Node> GetAllChildren()
+    {
+        var allChildren = new List<Node>();
+        var stack = new Stack<Node>(Children);
+        while (stack.Count > 0)
+        {
+            var current = stack.Pop();
+            allChildren.Add(current);
+            foreach (var child in current.Children)
+            {
+                stack.Push(child);
+            }
+        }
+        return allChildren;
     }
 }

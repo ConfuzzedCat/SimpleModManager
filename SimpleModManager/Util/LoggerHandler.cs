@@ -13,7 +13,7 @@ public static class LoggerHandler
         _logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .MinimumLevel.Is(LogEventLevel.Debug)
-            .WriteTo.File("log.txt",
+            .WriteTo.File("logs/log.txt",
                 rollingInterval: RollingInterval.Day,
                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}][{SourceContext}] - {Message}{NewLine}{Exception}")
             .CreateLogger();

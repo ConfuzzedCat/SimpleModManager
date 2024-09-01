@@ -6,16 +6,21 @@ namespace SimpleModManager.Util;
 
 public partial class ModHandler
 {
-    //TODO: finish implementing this method.
     public static Mod FromFile(string filePath)
     {
         if (ModManager.CurrentGame == null) throw new Exception("CurrentGame is null. SMM has been setup incorrectly.");
 
         ModManager.ClientIo.Write($"Installing: {filePath}");
+
         var gameId = ModManager.CurrentGame.ModSettings.Id;
         var modId = ParseModId(filePath);
         var isInstalled = false;
-        var apiInfo = new ApiClient().RequestModInfo(gameId, modId).GetAwaiter().GetResult();
+        ModInfoApi apiInfo = ModInfoApi.Empty;
+        if (!string.IsNullOrEmpty(ModManager.Apikey))
+        {
+            apiInfo = new ApiClient().RequestModInfo(gameId, modId).GetAwaiter().GetResult();
+        }
+
         var version = ParseVersion(filePath, apiInfo.version);
         var fileName = ParseFileName(filePath);
 
@@ -24,12 +29,66 @@ public partial class ModHandler
         var currentStagingFolder = ModManager.GetCurrentStagingFolder();
         var extractDir = Path.Combine(currentStagingFolder, $"{modId}##{fileName}##{version}");
         ExtractorHandler.ExtractFromFile(filePath, extractDir);
+        
+        // Handle weird mod structures
+        // TODO: make more robust and handle more cases 
+        var directories = Directory.GetDirectories(extractDir);
+        switch (directories.Length)
+        {
+            case 0:
+                // check files
+                HandleLooseFiles(extractDir);
+                break;
+            case 1:
+                // Check weird dir structure
+                HandleWeirdFolderStructure(directories[0]);
+                break;
+        }
 
         var mod = new Mod(modId, gameId, fileName, isInstalled, extractDir, version,
             VFSHandler.CreateFromPath(extractDir));
-
-
         return mod;
+    }
+
+    private static void HandleWeirdFolderStructure(string directory)
+    {
+        var dirInfo = new DirectoryInfo(directory);
+        if (ModManager.CurrentGame.ModSettings.ModStructures.Any(modStructure => modStructure.ModPath.StartsWith(dirInfo.Name)))
+        {
+            return;
+        }
+
+        foreach (var directoryInfo in dirInfo.GetDirectories())
+        {
+            Directory.Move(directoryInfo.FullName,dirInfo.Parent!.FullName);
+        }
+        Directory.Delete(dirInfo.FullName);
+    }
+
+    private static void HandleLooseFiles(string extractDir)
+    {
+        var files = Directory.GetFiles(extractDir);
+        if (files.Length < 1)
+        {
+            throw new Exception("Mod archive was empty.");
+        }
+
+        foreach (var file in files)
+        {
+            var fileInfo = new FileInfo(file);
+            foreach (var modStructure in ModManager.CurrentGame.ModSettings.ModStructures)
+            {
+                if (!modStructure.FileExtensions.Contains(fileInfo.Extension))
+                {
+                    continue;
+                }
+
+                var newPath = Path.Combine(extractDir, modStructure.ModPath);
+                Directory.CreateDirectory(newPath);
+                File.Move(file, Path.Combine(newPath, fileInfo.Name));
+                break;
+            }
+        }
     }
 
     private static int ParseModId(string filePath)
@@ -61,10 +120,18 @@ public partial class ModHandler
             return match.Groups[1].Value.Replace('-', '.');
         }
 
+
         var input = ModManager.ClientIo.Read(
             "Couldn't parse version from file. Please type the version or 'Latest' for latest found");
         if (string.IsNullOrEmpty(input) || input.Equals("latest", StringComparison.InvariantCultureIgnoreCase))
+        {
+            if (latestVersion == null)
+            {
+                throw new Exception("Couldn't parse Version, and Latest version was null.");
+            }
+
             return latestVersion;
+        }
 
         return input;
     }
@@ -79,7 +146,6 @@ public partial class ModHandler
             return match.Groups[1].Value[(match.Groups[1].Value.LastIndexOf(Path.DirectorySeparatorChar) + 1)..];
         }
 
-        // TODO: Change input prompt
         var input = ModManager.ClientIo.Read(
             "Couldn't parse Filename, eg. <filename>-<modid>-<version>-<filehash>.zip. Please type the name");
         return input;

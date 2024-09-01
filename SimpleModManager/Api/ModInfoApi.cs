@@ -2,6 +2,12 @@ namespace SimpleModManager.Api;
 
 public class ModInfoApi
 {
+    public static ModInfoApi Empty =>
+        new()
+        {
+            version = null
+        };
+
     public string name { get; set; }
     public string summary { get; set; }
     public string description { get; set; }
