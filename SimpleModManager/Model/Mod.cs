@@ -27,6 +27,7 @@ public class Mod
 
     internal void Install(string currentGameGamePath)
     {
+        var overwriteAll = false;
         foreach (var modFile in ModFiles.GetAllChildren())
         {
             if (modFile.IsFile())
@@ -34,7 +35,16 @@ public class Mod
                 var p = Path.Combine(currentGameGamePath, modFile.RelativePath);
                 if (File.Exists(p))
                 {
-                    var overwrite = ModManager.ClientIo.ReadBool($"{modFile.Name} Already exists in game folder, want to overwrite it?", true);
+                    if (SettingsManager.Settings.RememberOverwriteChoose && !overwriteAll)
+                    {
+                         overwriteAll = ModManager.ClientIo.ReadBool($"{Name}: Overwrite(s) found, do you want to overwrite all?", false);
+                        
+                    }
+                    var overwrite = true;
+                    if (!overwriteAll)
+                    {
+                        overwrite = ModManager.ClientIo.ReadBool($"{Name}: {modFile.Name} Already exists in game folder, want to overwrite it?", true);
+                    }
                     if (overwrite)
                     {
                         var backupPath = ModFiles.AbsolutePath + "_backup" + modFile.RelativePath.Remove(modFile.RelativePath.LastIndexOf(Path.DirectorySeparatorChar))[1..];
@@ -94,6 +104,16 @@ public class Mod
                 // The directory is not empty, leaving it as is
             }
         }
+
+        try
+        {
+            // TODO: Dumb way of doing this. Instead keep track of previous mods and find file conflicts that way and restore it to that. 
+            Directory.Delete(ModFiles.AbsolutePath + "_backup", false);
+        }
+        catch (IOException)
+        {
+            // The directory is not empty
+        }
     }
 
     //TODO: remember wtf i wanted to do with this....
@@ -102,5 +122,18 @@ public class Mod
         var file = Path.Combine(ModFiles.AbsolutePath, ".smm");
         var content = JsonSerializer.Serialize(this);
         File.WriteAllText(file, content);
+    }
+
+    public void Delete()
+    {
+        try
+        {
+            Directory.Delete(ModFiles.AbsolutePath, true);
+            Directory.Delete(ModFiles.AbsolutePath + "_backup", true);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // duplicated mod already deleted all files or no backup folder found
+        }
     }
 }

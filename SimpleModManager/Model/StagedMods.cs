@@ -67,4 +67,26 @@ public class StagedMods
             _StagedMods[index].ModFiles = VFSHandler.CreateFromPath(_StagedMods[index].ModFiles.AbsolutePath);
         }
     }
+
+    public void DeleteMod(Mod mod)
+    {
+        _StagedMods.Remove(mod);
+        InstalledMods.Remove(mod);
+    }
+
+    public Mod GetModsFromInfo(int modId, string fileName, string version)
+    {
+        var allMods = GetAllMods();
+        var find = allMods.Find((m) => m.Version == version &&
+                                       m.Id == modId &&
+                                       m.Name == fileName);
+        if (find is not null)
+        {
+            return find;
+        }
+
+        throw new Exception(
+            $"Mod staging folder was found, but is kept track of. Remove the Staging Folder for the mod. " +
+            $"f:{fileName} - v:{version} - id:{modId}");
+    }
 }

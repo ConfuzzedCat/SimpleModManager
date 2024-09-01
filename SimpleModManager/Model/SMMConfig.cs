@@ -2,12 +2,15 @@ namespace SimpleModManager.Model;
 
 public sealed class SmmConfig
 {
-    public SmmConfig(string stagingDir, string archiveDir)
+    public SmmConfig(string stagingDir, string archiveDir, bool rememberOverwriteChoose)
     {
-        StagingDir = stagingDir;
         ArchiveDir = archiveDir;
+        StagingDir = stagingDir;
+        RememberOverwriteChoose = rememberOverwriteChoose;
     }
 
-    public string StagingDir { get; set; }
-    public string ArchiveDir { get; set; }
+    public string ArchiveDir { get; set; } // TODO: Sanitize path using wildcard
+    public string StagingDir { get; set; } // TODO: Sanitize path using wildcard
+
+    public bool RememberOverwriteChoose { get; set; }
 }

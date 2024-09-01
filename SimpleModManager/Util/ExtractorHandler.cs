@@ -34,6 +34,8 @@ public sealed class ExtractorHandler
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
+            extractDir = '\'' + extractDir + '\'';
+            filePath = '\'' + filePath + '\'';
             var bin = Path.Combine(Directory.GetCurrentDirectory() /*AppDomain.CurrentDomain.BaseDirectory*/, "7zipBin", "Linux", "7zzs");
             var psi = new ProcessStartInfo
             {
@@ -42,6 +44,7 @@ public sealed class ExtractorHandler
             };
             var proc = new Process() { StartInfo = psi };
             proc.Start();
+            proc.WaitForExit();
             return;
         }
 
@@ -51,10 +54,11 @@ public sealed class ExtractorHandler
         {
             WindowStyle = ProcessWindowStyle.Hidden,
             FileName = "cmd.exe",
-            Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg"
+            Arguments = "/C copy /b Image1.jpg + Archive.rar Image2.jpg" // TODO: whoops :P
         };
         process.StartInfo = startInfo;
         process.Start();
+        process.WaitForExit();
     }
 
     private static void ExtractOther(string filePath, string extractDir)

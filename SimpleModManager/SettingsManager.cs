@@ -51,7 +51,7 @@ public sealed class SettingsManager
     {
         var stagingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Staging", "{game}");
         var archiveDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Archive", "{game}");
-        return new SmmConfig(stagingDir, archiveDir);
+        return new SmmConfig(stagingDir, archiveDir, false);
     }
 
     private static SmmConfig SaveSettings(SmmConfig settings)

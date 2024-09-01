@@ -10,7 +10,13 @@ public partial class ModHandler
     {
         if (ModManager.CurrentGame == null) throw new Exception("CurrentGame is null. SMM has been setup incorrectly.");
 
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException("Couldn't find mod file to install.", filePath);
+        }
+        
         ModManager.ClientIo.Write($"Installing: {filePath}");
+        
 
         var gameId = ModManager.CurrentGame.ModSettings.Id;
         var modId = ParseModId(filePath);
@@ -23,18 +29,33 @@ public partial class ModHandler
 
         var version = ParseVersion(filePath, apiInfo.version);
         var fileName = ParseFileName(filePath);
-
-        // unzip and register files
-
+        
+        // Check if mod with same version already exists
         var currentStagingFolder = ModManager.GetCurrentStagingFolder();
         var extractDir = Path.Combine(currentStagingFolder, $"{modId}##{fileName}##{version}");
-        ExtractorHandler.ExtractFromFile(filePath, extractDir);
+        if (Directory.Exists(extractDir))
+        {
+            return ModManager.CurrentGame.Mods.GetModsFromInfo(modId, fileName, version);
+        }
         
+        // unzip and register files
+        ExtractorHandler.ExtractFromFile(filePath, extractDir);
         // Handle weird mod structures
         // TODO: make more robust and handle more cases 
         var directories = Directory.GetDirectories(extractDir);
+        HandleWeirdArchiveStructures(directories, extractDir);
+
+        var mod = new Mod(modId, gameId, fileName, isInstalled, extractDir, version,
+            VFSHandler.CreateFromPath(extractDir));
+        return mod;
+    }
+
+    private static void HandleWeirdArchiveStructures(string[] directories, string extractDir)
+    {
         switch (directories.Length)
         {
+            //TODO: shit ain't working
+            
             case 0:
                 // check files
                 HandleLooseFiles(extractDir);
@@ -44,10 +65,6 @@ public partial class ModHandler
                 HandleWeirdFolderStructure(directories[0]);
                 break;
         }
-
-        var mod = new Mod(modId, gameId, fileName, isInstalled, extractDir, version,
-            VFSHandler.CreateFromPath(extractDir));
-        return mod;
     }
 
     private static void HandleWeirdFolderStructure(string directory)
@@ -55,6 +72,19 @@ public partial class ModHandler
         var dirInfo = new DirectoryInfo(directory);
         if (ModManager.CurrentGame.ModSettings.ModStructures.Any(modStructure => modStructure.ModPath.StartsWith(dirInfo.Name)))
         {
+            return;
+        }
+
+        var files = dirInfo.GetFiles();
+        if (files.Length > 0)
+        {
+            foreach (var file in files)
+            {
+                File.Move(file.FullName, Path.Combine(dirInfo.Parent!.FullName, file.Name));
+            }
+            
+            HandleLooseFiles(dirInfo.Parent!.FullName);
+            Directory.Delete(dirInfo.FullName);
             return;
         }
 

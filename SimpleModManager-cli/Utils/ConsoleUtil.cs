@@ -234,4 +234,9 @@ public class ConsoleUtil
     {
         return UnderlineStr + BoldStr + text + ResetStr;
     }
+
+    public static string BoldUnderlineFirstChar(string text)
+    {
+        return UnderlineStr + text[0] + ResetStr + text[1..];
+    }
 }

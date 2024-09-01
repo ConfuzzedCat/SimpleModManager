@@ -10,6 +10,7 @@ public class ModManager
     private static readonly ILogger Logger;
     public static readonly string Apikey;
 
+    // TODO: CRITICAL: Sanitize inputs solution wide. 
     static ModManager()
     {
         Logger = LoggerHandler.GetLogger<ModManager>();
@@ -76,21 +77,18 @@ public class ModManager
             filePath = filePath.Remove(filePath.Length - 1);
         }
         var mod = ModHandler.FromFile(filePath);
-        mod.Install(CurrentGame.GamePath);
-        CurrentGame.Mods.InstallMod(mod);
-        //mod.WriteToDisk();
+        InstallMod(mod);
+
     }
     public static void InstallMod(Mod mod)
     {
         mod.Install(CurrentGame.GamePath);
         CurrentGame.Mods.InstallMod(mod);
-        //mod.WriteToDisk();
     }
     public static void UninstallMod(Mod mod)
     {
         mod.Uninstall(CurrentGame.GamePath);
         CurrentGame.Mods.StageMod(mod);
-        //mod.WriteToDisk();
     }
     public static string GetCurrentStagingFolder()
     {
@@ -130,5 +128,34 @@ public class ModManager
         var gameStagedModsFile = Path.Combine(gamesModPath, CurrentGame.ModSettings.Id + "_mods.json");
         var content = JsonSerializer.Serialize(CurrentGame.Mods);
         File.WriteAllText(gameStagedModsFile, content);
+    }
+
+    public static void InstallMods(string folderpath)
+    {
+        if (!Directory.Exists(folderpath))
+        {
+            throw new IOException("Directory doesn't exists.");
+        }
+        var filteredFiles = Directory
+            .EnumerateFiles(folderpath) 
+            .Where(file =>
+            {
+                //.7z/.rar/.zip
+                return file.ToLower().EndsWith("7z") || 
+                       file.ToLower().EndsWith("zip") || 
+                       file.ToLower().EndsWith("rar");
+            })
+            .ToList();
+        foreach (var file in filteredFiles)
+        {
+            InstallMod(file);
+        }
+    }
+
+    public static void DeleteMod(Mod mod)
+    {
+        mod.Uninstall(CurrentGame.GamePath);
+        mod.Delete();
+        CurrentGame.Mods.DeleteMod(mod);
     }
 }

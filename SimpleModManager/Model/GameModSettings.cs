@@ -25,8 +25,8 @@ public sealed class GameModSettings
             FileExtensions = fileExtensions;
         }
 
-        public string ModPath { get; private set; }
-        public string[] FileExtensions { get; private set; }
+        public string ModPath { get; set; }
+        public string[] FileExtensions { get; set; }
     }
     
     
