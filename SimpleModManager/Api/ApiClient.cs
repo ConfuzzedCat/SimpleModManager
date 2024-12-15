@@ -78,6 +78,7 @@ public sealed class ApiClient : IDisposable
         using (var response = await SendAsync(request))
         {
             response.EnsureSuccessStatusCode();
+            //throw new IndexOutOfRangeException()
 
             var body = await response.Content.ReadAsStringAsync();
 

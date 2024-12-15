@@ -6,8 +6,9 @@ namespace SimpleModManager.Util;
 
 public partial class ModHandler
 {
-    public static Mod FromFile(string filePath)
+    public static Mod FromFile(string filePath, out bool alreadyInstalled)
     {
+        alreadyInstalled = false;
         if (ModManager.CurrentGame == null) throw new Exception("CurrentGame is null. SMM has been setup incorrectly.");
 
         if (!File.Exists(filePath))
@@ -34,8 +35,10 @@ public partial class ModHandler
         var currentStagingFolder = ModManager.GetCurrentStagingFolder();
         var extractDir = Path.Combine(currentStagingFolder, $"{modId}##{fileName}##{version}");
         if (Directory.Exists(extractDir))
-        {
-            return ModManager.CurrentGame.Mods.GetModsFromInfo(modId, fileName, version);
+        { 
+            var foundMod = ModManager.CurrentGame.Mods.GetModsFromInfo(modId, fileName, version);
+            alreadyInstalled = foundMod.Installed;
+            return foundMod;
         }
         
         // unzip and register files

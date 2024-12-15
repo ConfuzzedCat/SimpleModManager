@@ -38,6 +38,30 @@
         <None Update="7zipBin\Win\x64\7zxa.dll">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="7zipBin\Linux\License.txt">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\64\7za.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\64\7za.exe">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\64\7zxa.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\License.txt">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\32\7za.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\32\7za.exe">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="7zipBin\Win\32\7zxa.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

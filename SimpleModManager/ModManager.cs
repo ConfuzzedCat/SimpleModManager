@@ -38,7 +38,8 @@ public class ModManager
 
         var gameModSettingsFile = Path.Combine(gamesModPath, gameId + ".json");
         var gameStagedModsFile = Path.Combine(gamesModPath, gameId + "_mods.json");
-        if (!File.Exists(gameModSettingsFile))
+        bool doesGameSettingsExist = File.Exists(gameModSettingsFile);
+        if (!doesGameSettingsExist)
         {
             throw new FileNotFoundException($"Game Mod Settings file was not found for given id: {gameId}.");
         }
@@ -69,16 +70,25 @@ public class ModManager
 
     public static void InstallMod(string filePath)
     {
-        filePath = filePath.TrimEnd();
-        if ((filePath.StartsWith('\'') && filePath.EndsWith('\'')) ||
-            (filePath.StartsWith('"') && filePath.EndsWith('"')))
+        try
         {
-            filePath = filePath[1..];
-            filePath = filePath.Remove(filePath.Length - 1);
+            filePath = filePath.TrimEnd();
+            if ((filePath.StartsWith('\'') && filePath.EndsWith('\'')) ||
+                (filePath.StartsWith('"') && filePath.EndsWith('"')))
+            {
+                filePath = filePath[1..];
+                filePath = filePath.Remove(filePath.Length - 1);
+            }
+            var mod = ModHandler.FromFile(filePath, out bool alreadyInstalled);
+            if (!alreadyInstalled)
+            {
+                InstallMod(mod);
+            }
         }
-        var mod = ModHandler.FromFile(filePath);
-        InstallMod(mod);
-
+        catch (Exception e)
+        {
+            Logger.Warning(e, "An error happened when installing {0}. Skipping", filePath);
+        }
     }
     public static void InstallMod(Mod mod)
     {
