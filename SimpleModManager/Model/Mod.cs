@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using SimpleModManager.Model.VirtualFileSystem;
 
@@ -25,14 +26,16 @@ public class Mod
     public string Version { get; set; }
     public Node ModFiles { get; set; }
 
-    internal void Install(string currentGameGamePath)
+    internal void Install(string currentGamePath)
     {
+        var currentGameModSettings = ModManager.CurrentGame.ModSettings;
+        var clientIo = ModManager.ClientIo;
         var overwriteAll = false;
-        foreach (var modFile in ModFiles.GetAllChildren())
+        foreach (var modNode in ModFiles.GetAllChildren())
         {
-            if (modFile.IsFile())
+            if (modNode.IsFile())
             {
-                var p = Path.Combine(currentGameGamePath, modFile.RelativePath);
+                var p = Path.Combine(currentGamePath, modNode.RelativePath);
                 if (File.Exists(p))
                 {
                     if (SettingsManager.Settings.RememberOverwriteChoose && !overwriteAll)
@@ -43,25 +46,25 @@ public class Mod
                     var overwrite = true;
                     if (!overwriteAll)
                     {
-                        overwrite = ModManager.ClientIo.ReadBool($"{Name}: {modFile.Name} Already exists in game folder, want to overwrite it?", true);
+                        overwrite = ModManager.ClientIo.ReadBool($"{Name}: {modNode.Name} Already exists in game folder, want to overwrite it?", true);
                     }
                     if (overwrite)
                     {
-                        var backupPath = ModFiles.AbsolutePath + "_backup" + modFile.RelativePath.Remove(modFile.RelativePath.LastIndexOf(Path.DirectorySeparatorChar))[1..];
+                        var backupPath = ModFiles.AbsolutePath + "_backup" + modNode.RelativePath.Remove(modNode.RelativePath.LastIndexOf(Path.DirectorySeparatorChar))[1..];
                         Directory.CreateDirectory(backupPath);
-                        File.Move(p, ModFiles.AbsolutePath + "_backup" + modFile.RelativePath[1..], false);
+                        File.Move(p, ModFiles.AbsolutePath + "_backup" + modNode.RelativePath[1..], false);
                     }
                     else
                     {
                         continue;
                     }
                 }
-                File.Copy(modFile.AbsolutePath, p, false);
+                File.Copy(modNode.AbsolutePath, p, false);
             }
 
-            if (modFile.IsDir())
+            if (modNode.IsDir())
             {
-                var p = Path.Combine(currentGameGamePath, modFile.RelativePath);
+                var p = Path.Combine(currentGamePath, modNode.RelativePath);
                 Directory.CreateDirectory(p);
             }
         }

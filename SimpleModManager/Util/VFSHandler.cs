@@ -17,10 +17,10 @@ public class VFSHandler
     {
         Logger.Information("Making VFS of {0}", path);
 
-        return _CreateFromPath(path);
+        return InternalCreateFromPath(path);
     }
 
-    private static Node _CreateFromPath(string path)
+    private static Node InternalCreateFromPath(string path)
     {
         var directoryInfo = new DirectoryInfo(path);
         var root = new Node(directoryInfo.Name, path, "");
@@ -35,12 +35,12 @@ public class VFSHandler
 
         foreach (var directory in directoryInfo.GetDirectories())
         {
-            root.AddChild(_CreateFromPathWithParent(directory.FullName, root));
+            root.AddChild(InternalCreateFromPathWithParent(directory.FullName, root, true));
         }
         return root;
     }
 
-    private static Node _CreateFromPathWithParent(string path, Node parent)
+    private static Node InternalCreateFromPathWithParent(string path, Node parent, bool isRootDir = false)
     {
         var directoryInfo = new DirectoryInfo(path);
         var root = new Node(directoryInfo.Name, path, parent.RelativePath);
@@ -55,7 +55,24 @@ public class VFSHandler
 
         foreach (var directory in directoryInfo.GetDirectories())
         {
-            root.AddChild(_CreateFromPathWithParent(directory.FullName, root));
+            if (isRootDir)
+            {
+                var relativePath = root.RelativePath.Substring(2);
+                if (relativePath == root.Name)
+                {
+                    var rootFolders = ModManager.CurrentGame.ModSettings.ModStructures.Select(ms => ms.RootFolder);
+                    if (rootFolders.Contains(root.Name) == false)
+                    {
+                        var keepFolder = ModManager.ClientIo
+                            .ReadBool($"Mod has non-standard folder structure, do you want to preserve it? folder name:{root.Name}", false);
+                        if (keepFolder == false)
+                        {
+                            return InternalCreateFromPathWithParent(directory.FullName, parent, isRootDir);
+                        }
+                    }
+                }
+            }
+            root.AddChild(InternalCreateFromPathWithParent(directory.FullName, root));
         }
         return root;
     }

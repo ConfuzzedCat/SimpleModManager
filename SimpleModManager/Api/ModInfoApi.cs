@@ -1,12 +1,29 @@
+// ReSharper disable InconsistentNaming
+
+using System.Data;
+
 namespace SimpleModManager.Api;
 
 public class ModInfoApi
 {
+    public ModInfoApi()
+    {
+        version = string.Empty;
+        author = string.Empty;
+        name = string.Empty;
+        summary = string.Empty;
+        description = string.Empty;
+        picture_url = string.Empty;
+        domain_name = string.Empty;
+        uploaded_by = string.Empty;
+        uploaded_users_profile_url = string.Empty;
+        status = string.Empty;
+        user = User.Empty;
+        endorsement = Endorsement.Empty;
+    }
+
     public static ModInfoApi Empty =>
-        new()
-        {
-            version = null
-        };
+        new();
 
     public string name { get; set; }
     public string summary { get; set; }
@@ -37,6 +54,13 @@ public class ModInfoApi
 
     public class User
     {
+        public static User Empty => new();
+
+        public User()
+        {
+            name = string.Empty;
+        }
+        
         public int member_id { get; set; }
         public int member_group_id { get; set; }
         public string name { get; set; }
@@ -44,8 +68,15 @@ public class ModInfoApi
 
     public class Endorsement
     {
+        public Endorsement()
+        {
+            endorse_status = string.Empty;
+            version = string.Empty;
+        }
+        
+        public static Endorsement Empty => new();
         public string endorse_status { get; set; }
-        public int? timestamp { get; set; }
-        public string? version { get; set; }
+        public int timestamp { get; set; }
+        public string version { get; set; }
     }
 }

@@ -23,7 +23,7 @@ public partial class ModHandler
         var modId = ParseModId(filePath);
         var isInstalled = false;
         ModInfoApi apiInfo = ModInfoApi.Empty;
-        if (!string.IsNullOrEmpty(ModManager.Apikey))
+        if (!string.IsNullOrWhiteSpace(ModManager.Apikey))
         {
             apiInfo = new ApiClient().RequestModInfo(gameId, modId).GetAwaiter().GetResult();
         }
@@ -65,7 +65,7 @@ public partial class ModHandler
                 break;
             case 1:
                 // Check weird dir structure
-                HandleWeirdFolderStructure(directories[0]);
+                //HandleWeirdFolderStructure(directories[0]);
                 break;
         }
     }
@@ -138,7 +138,7 @@ public partial class ModHandler
         do
         {
             input = ModManager.ClientIo.Read("Mod Id couldn't parsed from file. Manually type id");
-        } while (int.TryParse(input, out modId));
+        } while (int.TryParse(input, out modId) == false);
 
         return modId;
     }

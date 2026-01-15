@@ -20,7 +20,7 @@ public class ModManager
         }
         catch (Exception e)
         {
-            Logger.Warning("Can't load apikey, will try and guess the info.", e);
+            Logger.Warning("Can't load apikey, will try and guess the info. {e}", e);
             Apikey = string.Empty;
         }
     }
@@ -33,21 +33,21 @@ public class ModManager
 
     public static void ModGame(string gameId)
     {
-        var gamesModPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GameModSettings");
-        if (!Directory.Exists(gamesModPath)) Directory.CreateDirectory(gamesModPath);
-
-        var gameModSettingsFile = Path.Combine(gamesModPath, gameId + ".json");
-        var gameStagedModsFile = Path.Combine(gamesModPath, gameId + "_mods.json");
-        bool doesGameSettingsExist = File.Exists(gameModSettingsFile);
-        if (!doesGameSettingsExist)
-        {
-            throw new FileNotFoundException($"Game Mod Settings file was not found for given id: {gameId}.");
-        }
-
-        Logger.Information("Game with id \"{0}\" found.", gameId);
-        var content = File.ReadAllText(gameModSettingsFile);
         try
         {
+            var gamesModPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GameModSettings");
+            if (!Directory.Exists(gamesModPath)) Directory.CreateDirectory(gamesModPath);
+
+            var gameModSettingsFile = Path.Combine(gamesModPath, gameId + ".json");
+            var gameStagedModsFile = Path.Combine(gamesModPath, gameId + "_mods.json");
+            bool doesGameSettingsExist = File.Exists(gameModSettingsFile);
+            if (!doesGameSettingsExist)
+            {
+                throw new FileNotFoundException($"Game Mod Settings file was not found for given id: {gameId}.");
+            }
+
+            Logger.Information("Game with id \"{0}\" found.", gameId);
+            var content = File.ReadAllText(gameModSettingsFile);
             CurrentGame = new GameHandler(JsonSerializer.Deserialize<GameModSettings>(content));
             if (File.Exists(gameStagedModsFile))
             {
@@ -63,6 +63,12 @@ public class ModManager
         catch (Exception e)
         {
             Logger.Error(e, "Failed to load game mod settings. Probably invalid Json format.");
+            string name = ClientIo.Read("What is the name of the game?");
+            string id = ClientIo.Read("What is it nexus mod's game id of the game?");
+            string partSteamId = ClientIo.Read("What is the steam id of the game?");
+            string steamid = $"steam://rungameid/{partSteamId}";
+            var gameSettings = new GameModSettings(id, name, steamid, [GameModSettings.ModFileSettingStructure.Default()]);
+            CurrentGame = new GameHandler(gameSettings);
         }
         // TODO: integrate the vfs
         //GameVFS = VFSHandler.CreateFromPath(CurrentGame.GamePath);
@@ -117,9 +123,9 @@ public class ModManager
 
         if (!File.Exists(dotEnvFile))
         {
-            File.WriteAllText(dotEnvFile, "apikey=\"<key>\"");
+            File.WriteAllText(dotEnvFile, "apikey=\"\"");
             throw new FileNotFoundException(
-                "File not found. Created the file. Remember to add your api into it (File is hidden). just replace '<key>' with your key from here: https://next.nexusmods.com/settings/api-keys",
+                "File not found. Created the file. Remember to add your api into it (File is hidden). Just add the key from the link inside the quotes: https://next.nexusmods.com/settings/api-keys",
                 ".env");
         }
 

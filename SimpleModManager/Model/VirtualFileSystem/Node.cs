@@ -1,11 +1,12 @@
 
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json.Serialization;
 
 namespace SimpleModManager.Model.VirtualFileSystem;
 
-public sealed class Node
+public struct Node
 {
     [JsonConstructor]
     public Node()
@@ -88,5 +89,51 @@ public sealed class Node
             }
         }
         return allChildren;
+    }
+
+    public override bool Equals([NotNullWhen(true)] object? obj)
+    {
+        return base.Equals(obj);
+    }
+
+    public bool DoesNodesConflict(Node other, out List<Node> conflicts)
+    {
+        conflicts = [];
+        
+        return IsFile() ? DoesNodesConflictFile(other) : DoesNodesConflictDir(other, out conflicts); 
+    }
+    
+    private bool DoesNodesConflictFile(Node other)
+    {
+        return GetNodeRelativePath() == other.GetNodeRelativePath();
+    }
+
+    private string GetNodeRelativePath()
+    {
+        return $"{RelativePath}{Path.DirectorySeparatorChar}{Name}";
+    }
+
+    private bool DoesNodesConflictDir(Node other, out List<Node> conflicts)
+    {
+        conflicts = [];
+        if (other.IsDir() && other.Name == Name)
+        {
+            
+            bool flag = false;
+            foreach (var child in Children)
+            {
+                flag = child.DoesNodesConflict(other, out var childConflicts);
+                if (flag)
+                {
+                    conflicts.AddRange(childConflicts);
+                }
+            }
+        }
+        return GetNodeRelativePath() == other.GetNodeRelativePath();
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
     }
 }

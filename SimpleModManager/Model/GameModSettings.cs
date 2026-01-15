@@ -19,16 +19,28 @@ public sealed class GameModSettings
     
     public sealed class ModFileSettingStructure
     {
-        public ModFileSettingStructure(string modPath, string[] fileExtensions)
+        public static ModFileSettingStructure Default()
+        {
+            return new ModFileSettingStructure(
+                "",
+                [],
+                "Let the the mod manager guess.",
+                ""
+                );
+        }
+        
+        
+        public ModFileSettingStructure(string modPath, string[] fileExtensions, string modType, string rootFolder)
         {
             ModPath = modPath;
             FileExtensions = fileExtensions;
+            ModType = modType;
+            RootFolder = rootFolder;
         }
 
         public string ModPath { get; set; }
         public string[] FileExtensions { get; set; }
+        public string ModType  { get; set; }
+        public string RootFolder { get; set; }
     }
-    
-    
-    
 }
