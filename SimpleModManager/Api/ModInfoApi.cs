@@ -18,8 +18,6 @@ public class ModInfoApi
         uploaded_by = string.Empty;
         uploaded_users_profile_url = string.Empty;
         status = string.Empty;
-        user = User.Empty;
-        endorsement = Endorsement.Empty;
     }
 
     public static ModInfoApi Empty =>
@@ -49,34 +47,4 @@ public class ModInfoApi
     public bool contains_adult_content { get; set; }
     public string status { get; set; }
     public bool available { get; set; }
-    public User user { get; set; }
-    public Endorsement endorsement { get; set; }
-
-    public class User
-    {
-        public static User Empty => new();
-
-        public User()
-        {
-            name = string.Empty;
-        }
-        
-        public int member_id { get; set; }
-        public int member_group_id { get; set; }
-        public string name { get; set; }
-    }
-
-    public class Endorsement
-    {
-        public Endorsement()
-        {
-            endorse_status = string.Empty;
-            version = string.Empty;
-        }
-        
-        public static Endorsement Empty => new();
-        public string endorse_status { get; set; }
-        public int timestamp { get; set; }
-        public string version { get; set; }
-    }
 }
