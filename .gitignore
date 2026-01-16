@@ -1,12 +1,5 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
-.env
-
-# Created by https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,visualstudio,rider
-# Edit at https://www.toptal.com/developers/gitignore?templates=csharp,dotnetcore,visualstudio,rider
+# Created by https://www.toptal.com/developers/gitignore/api/rider,csharp,dotnetcore,intellij+all,visualstudio,visualstudiocode,dotenv
+# Edit at https://www.toptal.com/developers/gitignore?templates=rider,csharp,dotnetcore,intellij+all,visualstudio,visualstudiocode,dotenv
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and
@@ -406,6 +399,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+### dotenv ###
+.env
+
 ### DotnetCore ###
 # .NET Core build folders
 bin/
@@ -415,7 +411,7 @@ obj/
 /node_modules
 /wwwroot/node_modules
 
-### Rider ###
+### Intellij+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
@@ -493,6 +489,77 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+### Intellij+all Patch ###
+# Ignore everything but code style settings and run configurations
+# that are supposed to be shared within teams.
+
+.idea/*
+
+!.idea/codeStyles
+!.idea/runConfigurations
+
+### Rider ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+
+# AWS User-specific
+
+# Generated files
+
+# Sensitive or high-churn files
+
+# Gradle
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/artifacts
+# .idea/compiler.xml
+# .idea/jarRepositories.xml
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+# *.iml
+# *.ipr
+
+# CMake
+
+# Mongo Explorer plugin
+
+# File-based project format
+
+# IntelliJ
+
+# mpeltonen/sbt-idea plugin
+
+# JIRA plugin
+
+# Cursive Clojure plugin
+
+# SonarLint plugin
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+
+# Editor-based Rest Client
+
+# Android studio 3.1+ serialized cache file
+
+### VisualStudioCode ###
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
 
 ### VisualStudio ###
 
@@ -675,4 +742,4 @@ fabric.properties
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/csharp,dotnetcore,visualstudio,rider
+# End of https://www.toptal.com/developers/gitignore/api/rider,csharp,dotnetcore,intellij+all,visualstudio,visualstudiocode,dotenv
